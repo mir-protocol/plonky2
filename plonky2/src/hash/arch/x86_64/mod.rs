@@ -1,5 +1,6 @@
 // // Requires:
 // // - AVX2
-// // - BMI2 (for MULX and SHRX)
-// #[cfg(all(target_feature = "avx2", target_feature = "bmi2"))]
-// pub(crate) mod poseidon_goldilocks_avx2_bmi2;
+#[cfg(target_feature = "avx2")]
+pub(crate) mod goldilocks_avx2;
+#[cfg(target_feature = "avx2")]
+pub(crate) mod poseidon_goldilocks_avx2;

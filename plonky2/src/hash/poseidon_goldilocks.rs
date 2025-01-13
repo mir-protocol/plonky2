@@ -308,7 +308,7 @@ impl Poseidon for GoldilocksField {
 // The following code has been adapted from winterfell/crypto/src/hash/mds/mds_f64_12x12.rs
 // located at https://github.com/facebook/winterfell.
 #[cfg(not(all(target_arch = "aarch64", target_feature = "neon")))]
-mod poseidon12_mds {
+pub(crate) mod poseidon12_mds {
     const MDS_FREQ_BLOCK_ONE: [i64; 3] = [16, 32, 16];
     const MDS_FREQ_BLOCK_TWO: [(i64, i64); 3] = [(2, -1), (-4, 1), (16, 1)];
     const MDS_FREQ_BLOCK_THREE: [i64; 3] = [-1, -8, 2];
@@ -354,7 +354,7 @@ mod poseidon12_mds {
     }
 
     #[inline(always)]
-    const fn block2(x: [(i64, i64); 3], y: [(i64, i64); 3]) -> [(i64, i64); 3] {
+    pub(crate) const fn block2(x: [(i64, i64); 3], y: [(i64, i64); 3]) -> [(i64, i64); 3] {
         let [(x0r, x0i), (x1r, x1i), (x2r, x2i)] = x;
         let [(y0r, y0i), (y1r, y1i), (y2r, y2i)] = y;
         let x0s = x0r + x0i;

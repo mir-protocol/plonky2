@@ -8,6 +8,8 @@ use core::fmt::Debug;
 use plonky2_field::packed::PackedField;
 use unroll::unroll_for_loops;
 
+#[cfg(target_feature = "avx2")]
+use super::arch::x86_64::poseidon_goldilocks_avx2::poseidon_avx;
 use crate::field::extension::{Extendable, FieldExtension};
 use crate::field::types::{Field, PrimeField64};
 use crate::gates::gate::Gate;
@@ -37,14 +39,14 @@ pub const N_ROUNDS: usize = N_FULL_ROUNDS_TOTAL + N_PARTIAL_ROUNDS;
 const MAX_WIDTH: usize = 12; // we only have width 8 and 12, and 12 is bigger. :)
 
 #[inline(always)]
-const fn add_u160_u128((x_lo, x_hi): (u128, u32), y: u128) -> (u128, u32) {
+pub(crate) const fn add_u160_u128((x_lo, x_hi): (u128, u32), y: u128) -> (u128, u32) {
     let (res_lo, over) = x_lo.overflowing_add(y);
     let res_hi = x_hi + (over as u32);
     (res_lo, res_hi)
 }
 
 #[inline(always)]
-fn reduce_u160<F: PrimeField64>((n_lo, n_hi): (u128, u32)) -> F {
+pub(crate) fn reduce_u160<F: PrimeField64>((n_lo, n_hi): (u128, u32)) -> F {
     let n_lo_hi = (n_lo >> 64) as u64;
     let n_lo_lo = n_lo as u64;
     let reduced_hi: u64 = F::from_noncanonical_u96((n_lo_hi, n_hi)).to_noncanonical_u64();
@@ -763,6 +765,7 @@ pub trait Poseidon: PrimeField64 {
         *round_ctr += N_PARTIAL_ROUNDS;
     }
 
+    #[cfg(not(target_feature = "avx2"))]
     #[inline]
     fn poseidon(input: [Self; SPONGE_WIDTH]) -> [Self; SPONGE_WIDTH] {
         let mut state = input;
@@ -774,6 +777,12 @@ pub trait Poseidon: PrimeField64 {
         debug_assert_eq!(round_ctr, N_ROUNDS);
 
         state
+    }
+
+    #[cfg(target_feature = "avx2")]
+    #[inline]
+    fn poseidon(input: [Self; SPONGE_WIDTH]) -> [Self; SPONGE_WIDTH] {
+        poseidon_avx(&input)
     }
 
     // For testing only, to ensure that various tricks are correct.
