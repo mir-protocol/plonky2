@@ -174,7 +174,7 @@ def _fft_inplace(x, scratch):
         _fft_inplace_evenpow(x, scratch)
 
 
-def _scrach_length(lb_n):
+def _scratch_length(lb_n):
     """Find the amount of scratch space required to run the FFT.
 
     Layers where the input's length is an even power of two do not
@@ -206,7 +206,7 @@ def fft(x):
     # We have one scratch buffer for the whole algorithm. If we were to
     # parallelize it, we'd need one thread-local buffer for each worker
     # thread.
-    scratch_len = _scrach_length(lb_n)
+    scratch_len = _scratch_length(lb_n)
     if scratch_len == 0:
         scratch = None
     else:
