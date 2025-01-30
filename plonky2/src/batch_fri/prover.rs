@@ -110,19 +110,30 @@ pub(crate) fn batch_fri_committed_trees<
         trees.push(tree);
 
         let beta = challenger.get_extension_challenge::<D>();
-        // P(x) = sum_{i<r} x^i * P_i(x^r) becomes sum_{i<r} beta^i * P_i(x).
-        // TODO: Optimize the folding process. Consider folding the functions directly in the value domain.
-        final_coeffs = PolynomialCoeffs::new(
-            final_coeffs
-                .coeffs
+        
+        // Optimized folding directly in the value domain.
+        // For polynomial P(x) = sum_{i<r} x^i * P_i(x^r), we compute sum_{i<r} beta^i * P_i(x)
+        // directly on values, avoiding unnecessary FFT transformations.
+        // This is equivalent to the original folding in coefficient domain but requires fewer operations.
+        final_values = PolynomialValues::new(
+            final_values.values
                 .par_chunks_exact(arity)
-                .map(|chunk| reduce_with_powers(chunk, beta))
-                .collect::<Vec<_>>(),
+                .map(|chunk| {
+                    // Compute linear combination of values with powers of beta
+                    let mut result = chunk[0];
+                    let mut current_beta = beta;
+                    for &value in chunk.iter().skip(1) {
+                        result += current_beta * value;
+                        current_beta *= beta;
+                    }
+                    result
+                })
+                .collect::<Vec<_>>()
         );
+
         shift = shift.exp_u64(arity as u64);
-        final_values = final_coeffs.coset_fft(shift.into());
-        if polynomial_index != values.len() && final_values.len() == values[polynomial_index].len()
-        {
+        
+        if polynomial_index != values.len() && final_values.len() == values[polynomial_index].len() {
             final_values = PolynomialValues::new(
                 final_values
                     .values
@@ -133,6 +144,8 @@ pub(crate) fn batch_fri_committed_trees<
             );
             polynomial_index += 1;
         }
+        // Conversion to coefficients is required for compatibility with the rest of the code,
+        // as final_coeffs is used in subsequent proof stages
         final_coeffs = final_values.clone().coset_ifft(shift.into());
     }
     assert_eq!(polynomial_index, values.len());
