@@ -10,7 +10,7 @@ use plonky2_util::{log2_strict, reverse_index_bits_in_place};
 use crate::field::extension::{unflatten, Extendable};
 use crate::field::polynomial::{PolynomialCoeffs, PolynomialValues};
 use crate::fri::proof::{FriInitialTreeProof, FriProof, FriQueryRound, FriQueryStep};
-use crate::fri::prover::{fri_proof_of_work, FriCommitedTrees};
+use crate::fri::prover::{fri_proof_of_work, FriCommittedTrees};
 use crate::fri::FriParams;
 use crate::hash::batch_merkle_tree::BatchMerkleTree;
 use crate::hash::hash_types::RichField;
@@ -94,7 +94,7 @@ pub(crate) fn batch_fri_committed_trees<
     values: &[PolynomialValues<F::Extension>],
     challenger: &mut Challenger<F, C::Hasher>,
     fri_params: &FriParams,
-) -> FriCommitedTrees<F, C, D> {
+) -> FriCommittedTrees<F, C, D> {
     let mut trees = Vec::with_capacity(fri_params.reduction_arity_bits.len());
     let mut shift = F::MULTIPLICATIVE_GROUP_GENERATOR;
     let mut polynomial_index = 1;
