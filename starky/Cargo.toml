@@ -12,10 +12,11 @@ keywords.workspace = true
 categories.workspace = true
 
 [features]
-default = ["parallel", "std", "timing"]
+default = ["parallel", "std", "timing", "os_rng"]
 parallel = ["plonky2/parallel", "plonky2_maybe_rayon/parallel"]
 std = ["anyhow/std", "plonky2/std"]
 timing = ["plonky2/timing"]
+os_rng = ["plonky2/os_rng"]
 
 [dependencies]
 ahash = { workspace = true }

@@ -8,7 +8,12 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAss
 use num::bigint::BigUint;
 use num::{Integer, One, ToPrimitive, Zero};
 use plonky2_util::bits_u64;
+#[cfg(feature = "os_rng")]
 use rand::rngs::OsRng;
+#[cfg(not(feature = "os_rng"))]
+use rand::SeedableRng;
+#[cfg(not(feature = "os_rng"))]
+use rand_chacha::ChaCha8Rng;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
@@ -22,10 +27,19 @@ pub trait Sample: Sized {
     where
         R: rand::RngCore + ?Sized;
 
+    #[cfg(feature = "os_rng")]
     /// Samples a single value using the [`OsRng`].
     #[inline]
     fn rand() -> Self {
         Self::sample(&mut OsRng)
+    }
+
+    #[cfg(not(feature = "os_rng"))]
+    /// Samples a single value using seeded [`ChaCha8Rng`].
+    #[inline]
+    fn rand() -> Self {
+        let mut rng = ChaCha8Rng::seed_from_u64(0xDEADBEEF);
+        Self::sample(&mut rng)
     }
 
     /// Samples a [`Vec`] of values of length `n` using [`OsRng`].

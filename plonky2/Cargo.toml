@@ -12,11 +12,12 @@ keywords.workspace = true
 categories.workspace = true
 
 [features]
-default = ["gate_testing", "parallel", "rand_chacha", "std", "timing"]
+default = ["gate_testing", "parallel", "rand_chacha", "std", "timing", "os_rng"]
 gate_testing = []
 parallel = ["hashbrown/rayon", "plonky2_maybe_rayon/parallel"]
 std = ["anyhow/std", "rand/std", "itertools/use_std"]
 timing = ["std", "dep:web-time"]
+os_rng = ["plonky2_field/os_rng"]
 
 [dependencies]
 ahash = { workspace = true }
@@ -27,7 +28,7 @@ keccak-hash = { version = "0.8.0", default-features = false }
 log = { workspace = true }
 num = { workspace = true }
 rand = { workspace = true }
-rand_chacha = { version = "0.3.1", optional = true, default-features = false }
+rand_chacha = { workspace = true, optional = true }
 serde = { workspace = true, features = ["rc"] }
 static_assertions = { workspace = true }
 unroll = { workspace = true }

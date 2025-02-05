@@ -10,11 +10,16 @@ repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[features]
+default = ["os_rng"]
+os_rng = ["rand/getrandom"]
+
 [dependencies]
 anyhow = { workspace = true }
 itertools = { workspace = true, features = ["use_alloc"] }
 num = { workspace = true, features = ["alloc"] }
-rand = { workspace = true, features = ["getrandom"] }
+rand = { workspace = true }
+rand_chacha = { workspace = true}
 serde = { workspace = true, features = ["alloc"] }
 static_assertions = { workspace = true }
 unroll = { workspace = true }
