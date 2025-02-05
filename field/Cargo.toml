@@ -9,6 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
+build = "build.rs"
 
 [dependencies]
 anyhow = { workspace = true }
@@ -29,3 +30,6 @@ rustdoc-args = ["--html-in-header", ".cargo/katex-header.html"]
 
 [lints]
 workspace = true
+
+[build-dependencies]
+rustc_version = "0.4"

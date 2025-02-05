@@ -8,8 +8,14 @@ pub trait Packable: Field {
     type Packing: PackedField<Scalar = Self>;
 }
 
+#[cfg(nightly)]
 impl<F: Field> Packable for F {
     default type Packing = Self;
+}
+
+#[cfg(not(nightly))]
+impl<F: Field> Packable for F {
+    type Packing = Self;
 }
 
 #[cfg(all(

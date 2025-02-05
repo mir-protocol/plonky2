@@ -425,6 +425,7 @@ const fn split(x: u128) -> (u64, u64) {
 /// This function is marked 'unsafe' because correctness relies on the
 /// unchecked assumption that x < 2^160 - 2^128 + 2^96. Further,
 /// performance may degrade as x_hi increases beyond 2**40 or so.
+#[cfg(nightly)]
 #[inline(always)]
 pub(crate) unsafe fn reduce160(x_lo: u128, x_hi: u32) -> GoldilocksField {
     let x_hi = (x_lo >> 96) as u64 + ((x_hi as u64) << 32); // shld to form x_hi

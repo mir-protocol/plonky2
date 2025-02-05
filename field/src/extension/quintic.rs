@@ -7,6 +7,7 @@ use num::traits::Pow;
 use serde::{Deserialize, Serialize};
 
 use crate::extension::{Extendable, FieldExtension, Frobenius, OEF};
+#[cfg(nightly)]
 use crate::ops::Square;
 use crate::types::{Field, Sample};
 
@@ -210,11 +211,32 @@ impl<F: Extendable<5>> SubAssign for QuinticExtension<F> {
     }
 }
 
+#[cfg(nightly)]
 impl<F: Extendable<5>> Mul for QuinticExtension<F> {
     type Output = Self;
 
     #[inline]
     default fn mul(self, rhs: Self) -> Self {
+        let Self([a0, a1, a2, a3, a4]) = self;
+        let Self([b0, b1, b2, b3, b4]) = rhs;
+        let w = <Self as OEF<5>>::W;
+
+        let c0 = a0 * b0 + w * (a1 * b4 + a2 * b3 + a3 * b2 + a4 * b1);
+        let c1 = a0 * b1 + a1 * b0 + w * (a2 * b4 + a3 * b3 + a4 * b2);
+        let c2 = a0 * b2 + a1 * b1 + a2 * b0 + w * (a3 * b4 + a4 * b3);
+        let c3 = a0 * b3 + a1 * b2 + a2 * b1 + a3 * b0 + w * a4 * b4;
+        let c4 = a0 * b4 + a1 * b3 + a2 * b2 + a3 * b1 + a4 * b0;
+
+        Self([c0, c1, c2, c3, c4])
+    }
+}
+
+#[cfg(not(nightly))]
+impl<F: Extendable<5>> Mul for QuinticExtension<F> {
+    type Output = Self;
+
+    #[inline]
+    fn mul(self, rhs: Self) -> Self {
         let Self([a0, a1, a2, a3, a4]) = self;
         let Self([b0, b1, b2, b3, b4]) = rhs;
         let w = <Self as OEF<5>>::W;
@@ -236,6 +258,7 @@ impl<F: Extendable<5>> MulAssign for QuinticExtension<F> {
     }
 }
 
+#[cfg(nightly)]
 impl<F: Extendable<5>> Square for QuinticExtension<F> {
     #[inline(always)]
     fn square(&self) -> Self {
