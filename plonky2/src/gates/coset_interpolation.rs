@@ -643,6 +643,7 @@ fn partial_interpolate_ext_algebra_target<F: RichField + Extendable<D>, const D:
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use anyhow::Result;
     use plonky2_field::polynomial::PolynomialValues;

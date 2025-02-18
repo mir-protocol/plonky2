@@ -190,6 +190,7 @@ impl<F: OEF<D>, const D: usize> PolynomialCoeffsAlgebra<F, D> {
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use alloc::vec::Vec;
 

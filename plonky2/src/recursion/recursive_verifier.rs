@@ -220,6 +220,7 @@ mod tests {
     use crate::util::timing::TimingTree;
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn test_recursive_verifier() -> Result<()> {
         init_logger();
         const D: usize = 2;
@@ -236,6 +237,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn test_recursive_verifier_one_lookup() -> Result<()> {
         init_logger();
         const D: usize = 2;

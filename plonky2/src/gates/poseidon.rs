@@ -543,6 +543,7 @@ impl<F: RichField + Extendable<D> + Poseidon, const D: usize> SimpleGenerator<F,
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use anyhow::Result;
     use plonky2_field::goldilocks_field::GoldilocksField;

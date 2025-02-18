@@ -273,6 +273,7 @@ impl<const D: usize> ReducingFactorTarget<D> {
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use anyhow::Result;
 

@@ -117,10 +117,24 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
         blinding: bool,
         fft_root_table: Option<&FftRootTable<F>>,
     ) -> Vec<Vec<F>> {
-        let degree = polynomials[0].len();
+        if blinding {
+            #[cfg(not(feature = "no_random"))]
+            return Self::lde_blinded_values(polynomials, rate_bits, fft_root_table);
+            #[cfg(feature = "no_random")]
+            assert!(false, "Cannot set blinding with no_random feature");
+            [].into()
+        } else {
+            Self::lde_unblinded_values(polynomials, rate_bits, fft_root_table)
+        }
+    }
 
-        // If blinding, salt with two random elements to each leaf vector.
-        let salt_size = if blinding { SALT_SIZE } else { 0 };
+    #[cfg(not(feature = "no_random"))]
+    fn lde_blinded_values(
+        polynomials: &[PolynomialCoeffs<F>],
+        rate_bits: usize,
+        fft_root_table: Option<&FftRootTable<F>>
+    ) -> Vec<Vec<F>> {
+        let degree = polynomials[0].len();
 
         polynomials
             .par_iter()
@@ -131,10 +145,28 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
                     .values
             })
             .chain(
-                (0..salt_size)
+                (0..SALT_SIZE)
                     .into_par_iter()
                     .map(|_| F::rand_vec(degree << rate_bits)),
             )
+            .collect()
+    }
+
+    fn lde_unblinded_values(
+        polynomials: &[PolynomialCoeffs<F>],
+        rate_bits: usize,
+        fft_root_table: Option<&FftRootTable<F>>
+    ) -> Vec<Vec<F>> {
+        let degree = polynomials[0].len();
+
+        polynomials
+            .par_iter()
+            .map(|p| {
+                assert_eq!(p.len(), degree, "Polynomial degrees inconsistent");
+                p.lde(rate_bits)
+                    .coset_fft_with_options(F::coset_shift(), Some(rate_bits), fft_root_table)
+                    .values
+            })
             .collect()
     }
 

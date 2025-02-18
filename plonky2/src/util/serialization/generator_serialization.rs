@@ -121,8 +121,10 @@ pub mod default {
     use crate::gates::reducing_extension::ReducingGenerator as ReducingExtensionGenerator;
     use crate::hash::hash_types::RichField;
     use crate::iop::generator::{
-        ConstantGenerator, CopyGenerator, NonzeroTestGenerator, RandomValueGenerator,
+        ConstantGenerator, CopyGenerator, NonzeroTestGenerator,
     };
+    #[cfg(not(feature = "no_random"))]
+    use crate::iop::generator::RandomValueGenerator;
     use crate::plonk::config::{AlgebraicHasher, GenericConfig};
     use crate::recursion::dummy_circuit::DummyProofGenerator;
     use crate::util::serialization::WitnessGeneratorSerializer;
@@ -151,6 +153,34 @@ pub mod default {
         C: GenericConfig<D, F = F> + 'static,
         C::Hasher: AlgebraicHasher<F>,
     {
+        #[cfg(feature = "no_random")]
+        impl_generator_serializer! {
+            DefaultGeneratorSerializer,
+            ArithmeticBaseGenerator<F, D>,
+            ArithmeticExtensionGenerator<F, D>,
+            BaseSplitGenerator<2>,
+            BaseSumGenerator<2>,
+            ConstantGenerator<F>,
+            CopyGenerator,
+            DummyProofGenerator<F, C, D>,
+            EqualityGenerator,
+            ExponentiationGenerator<F, D>,
+            InterpolationGenerator<F, D>,
+            LookupGenerator,
+            LookupTableGenerator,
+            LowHighGenerator,
+            MulExtensionGenerator<F, D>,
+            NonzeroTestGenerator,
+            PoseidonGenerator<F, D>,
+            PoseidonMdsGenerator<D>,
+            QuotientGeneratorExtension<D>,
+            RandomAccessGenerator<F, D>,
+            ReducingGenerator<D>,
+            ReducingExtensionGenerator<D>,
+            SplitGenerator,
+            WireSplitGenerator
+        }
+        #[cfg(not(feature = "no_random"))]
         impl_generator_serializer! {
             DefaultGeneratorSerializer,
             ArithmeticBaseGenerator<F, D>,

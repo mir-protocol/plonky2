@@ -318,6 +318,7 @@ impl<F: RichField + Extendable<D>, const D: usize> SimpleGenerator<F, D>
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use anyhow::Result;
     use rand::rngs::OsRng;

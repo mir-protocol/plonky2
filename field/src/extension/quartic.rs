@@ -51,6 +51,7 @@ impl<F: Extendable<4>> From<F> for QuarticExtension<F> {
 
 impl<F: Extendable<4>> Sample for QuarticExtension<F> {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,

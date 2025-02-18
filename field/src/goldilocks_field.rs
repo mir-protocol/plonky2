@@ -58,6 +58,7 @@ impl Debug for GoldilocksField {
 
 impl Sample for GoldilocksField {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,

@@ -68,6 +68,7 @@ where
     F: Field,
 {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,
@@ -162,6 +163,7 @@ pub struct BytesHash<const N: usize>(pub [u8; N]);
 
 impl<const N: usize> Sample for BytesHash<N> {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,

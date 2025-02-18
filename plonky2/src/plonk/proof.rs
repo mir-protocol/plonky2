@@ -472,6 +472,7 @@ mod tests {
     use crate::plonk::verifier::verify;
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn test_proof_compression() -> Result<()> {
         const D: usize = 2;
         type C = PoseidonGoldilocksConfig;

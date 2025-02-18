@@ -36,8 +36,10 @@ use crate::hash::merkle_proofs::MerkleProofTarget;
 use crate::hash::merkle_tree::MerkleCap;
 use crate::iop::ext_target::ExtensionTarget;
 use crate::iop::generator::{
-    ConstantGenerator, CopyGenerator, RandomValueGenerator, SimpleGenerator, WitnessGeneratorRef,
+    ConstantGenerator, CopyGenerator, SimpleGenerator, WitnessGeneratorRef,
 };
+#[cfg(not(feature = "no_random"))]
+use crate::iop::generator::RandomValueGenerator;
 use crate::iop::target::{BoolTarget, Target};
 use crate::iop::wire::Wire;
 use crate::plonk::circuit_data::{
@@ -910,7 +912,10 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilder<F, D> {
 
     fn blind_and_pad(&mut self) {
         if self.config.zero_knowledge {
+            #[cfg(not(feature = "no_random"))]
             self.blind();
+            #[cfg(feature = "no_random")]
+            assert!(false, "Cannot use no_random feature with config.zero_knowledge");
         }
 
         while !self.gate_instances.len().is_power_of_two() {
@@ -918,6 +923,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilder<F, D> {
         }
     }
 
+    #[cfg(not(feature = "no_random"))]
     fn blind(&mut self) {
         let (regular_poly_openings, z_openings) = self.blinding_counts();
         info!(
@@ -1049,6 +1055,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilder<F, D> {
     /// mitigate this by randomizing some unused witness elements, so if proving fails with
     /// division by zero, the next attempt will have an (almost) independent chance of success.
     /// See <https://github.com/0xPolygonZero/plonky2/issues/456>.
+    #[cfg(not(feature = "no_random"))]
     fn randomize_unused_pi_wires(&mut self, pi_gate: usize) {
         for wire in PublicInputGate::wires_public_inputs_hash().end..self.config.num_wires {
             self.add_simple_generator(RandomValueGenerator {
@@ -1095,6 +1102,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilder<F, D> {
         {
             self.connect(hash_part, Target::wire(pi_gate, wire))
         }
+        #[cfg(not(feature = "no_random"))]
         self.randomize_unused_pi_wires(pi_gate);
 
         // Place LUT-related gates.

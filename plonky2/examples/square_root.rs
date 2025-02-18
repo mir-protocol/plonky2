@@ -1,3 +1,4 @@
+
 use core::marker::PhantomData;
 
 use anyhow::Result;
@@ -7,8 +8,10 @@ use plonky2::gates::poseidon::PoseidonGenerator;
 use plonky2::gates::poseidon_mds::PoseidonMdsGenerator;
 use plonky2::hash::hash_types::RichField;
 use plonky2::iop::generator::{
-    ConstantGenerator, GeneratedValues, RandomValueGenerator, SimpleGenerator,
+    ConstantGenerator, GeneratedValues, SimpleGenerator,
 };
+#[cfg(not(feature = "no_random"))]
+use plonky2::iop::generator::RandomValueGenerator;
 use plonky2::iop::target::Target;
 use plonky2::iop::witness::{PartialWitness, PartitionWitness, Witness, WitnessWrite};
 use plonky2::plonk::circuit_builder::CircuitBuilder;
@@ -20,6 +23,7 @@ use plonky2::util::serialization::{
 };
 use plonky2::{get_generator_tag_impl, impl_generator_serializer, read_generator_impl};
 use plonky2_field::extension::Extendable;
+use plonky2_field::types::Field;
 
 /// A generator used by the prover to calculate the square root (`x`) of a given value
 /// (`x_squared`), outside of the circuit, in order to supply it as an additional public input.
@@ -81,6 +85,7 @@ where
     C: GenericConfig<D, F = F> + 'static,
     C::Hasher: AlgebraicHasher<F>,
 {
+    #[cfg(not(feature = "no_random"))]
     impl_generator_serializer! {
         CustomGeneratorSerializer,
         DummyProofGenerator<F, C, D>,
@@ -91,10 +96,25 @@ where
         RandomValueGenerator,
         SquareRootGenerator<F, D>
     }
+
+    #[cfg(feature = "no_random")]
+    impl_generator_serializer! {
+        CustomGeneratorSerializer,
+        DummyProofGenerator<F, C, D>,
+        ArithmeticBaseGenerator<F, D>,
+        ConstantGenerator<F>,
+        PoseidonGenerator<F, D>,
+        PoseidonMdsGenerator<D>,
+        SquareRootGenerator<F, D>
+    }
 }
+
+#[cfg(feature = "no_random")]
+fn main() {}
 
 /// An example of using Plonky2 to prove a statement of the form
 /// "I know the square root of this field element."
+#[cfg(not(feature = "no_random"))]
 fn main() -> Result<()> {
     const D: usize = 2;
     type C = PoseidonGoldilocksConfig;

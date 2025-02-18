@@ -294,6 +294,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn test_batch_merkle_trees() -> Result<()> {
         let leaves_1 = crate::hash::merkle_tree::tests::random_data::<F>(1024, 7);
         let leaves_2 = crate::hash::merkle_tree::tests::random_data::<F>(64, 3);
@@ -317,6 +318,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn test_batch_merkle_trees_cap_at_leaves_height() -> Result<()> {
         let leaves_1 = crate::hash::merkle_tree::tests::random_data::<F>(16, 7);
 

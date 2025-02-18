@@ -293,6 +293,7 @@ impl<F: RichField + Extendable<D>, H: AlgebraicHasher<F>, const D: usize>
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     #[cfg(not(feature = "std"))]
     use alloc::vec::Vec;

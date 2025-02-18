@@ -12,11 +12,12 @@ keywords.workspace = true
 categories.workspace = true
 
 [features]
-default = ["gate_testing", "parallel", "rand_chacha", "std", "timing"]
+default = ["gate_testing", "parallel", "rand_chacha", "timing", "getrandom", "plonky2_field/default"]
 gate_testing = []
 parallel = ["hashbrown/rayon", "plonky2_maybe_rayon/parallel"]
 std = ["anyhow/std", "rand/std", "itertools/use_std"]
 timing = ["std", "dep:web-time"]
+no_random = ["plonky2_field/no_random"]
 
 [dependencies]
 ahash = { workspace = true }
@@ -39,8 +40,8 @@ plonky2_maybe_rayon = { version = "1.0.0", path = "../maybe_rayon", default-feat
 plonky2_util = { version = "1.0.0", path = "../util", default-features = false }
 
 
-[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
-getrandom = { version = "0.2", default-features = false, features = ["js"] }
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown", not(feature = "no-random")))'.dependencies]
+getrandom = { version = "0.2", default-features = false, features = ["js"], optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.5.1", default-features = false }

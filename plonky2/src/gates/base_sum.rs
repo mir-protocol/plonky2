@@ -231,6 +231,7 @@ impl<F: RichField + Extendable<D>, const B: usize, const D: usize> SimpleGenerat
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use anyhow::Result;
 

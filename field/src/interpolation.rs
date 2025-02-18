@@ -76,6 +76,7 @@ pub fn interpolate2<F: Field>(points: [(F, F); 2], x: F) -> F {
 }
 
 #[cfg(test)]
+#[cfg(not(feature = "no_random"))]
 mod tests {
     use super::*;
     use crate::extension::quartic::QuarticExtension;

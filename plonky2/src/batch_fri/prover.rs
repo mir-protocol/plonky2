@@ -339,6 +339,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(not(feature = "no_random"))]
     fn multiple_polynomials() -> Result<()> {
         let mut timing = TimingTree::default();
 

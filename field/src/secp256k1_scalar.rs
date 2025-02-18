@@ -69,6 +69,7 @@ impl Debug for Secp256K1Scalar {
 
 impl Sample for Secp256K1Scalar {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,

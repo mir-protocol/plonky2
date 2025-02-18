@@ -67,6 +67,7 @@ impl Debug for Secp256K1Base {
 
 impl Sample for Secp256K1Base {
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized,

@@ -14,7 +14,8 @@ categories.workspace = true
 anyhow = { workspace = true }
 itertools = { workspace = true, features = ["use_alloc"] }
 num = { workspace = true, features = ["alloc"] }
-rand = { workspace = true, features = ["getrandom"] }
+
+rand = { workspace = true, features = ["getrandom"], optional = true }
 serde = { workspace = true, features = ["alloc"] }
 static_assertions = { workspace = true }
 unroll = { workspace = true }
@@ -29,3 +30,7 @@ rustdoc-args = ["--html-in-header", ".cargo/katex-header.html"]
 
 [lints]
 workspace = true
+
+[features]
+default = ["rand"]
+no_random = []

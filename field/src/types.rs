@@ -8,6 +8,7 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAss
 use num::bigint::BigUint;
 use num::{Integer, One, ToPrimitive, Zero};
 use plonky2_util::bits_u64;
+#[cfg(not(feature = "no_random"))]
 use rand::rngs::OsRng;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -18,24 +19,28 @@ use crate::ops::Square;
 /// Sampling
 pub trait Sample: Sized {
     /// Samples a single value using `rng`.
+    #[cfg(not(feature = "no_random"))]
     fn sample<R>(rng: &mut R) -> Self
     where
         R: rand::RngCore + ?Sized;
 
     /// Samples a single value using the [`OsRng`].
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn rand() -> Self {
         Self::sample(&mut OsRng)
     }
 
     /// Samples a [`Vec`] of values of length `n` using [`OsRng`].
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn rand_vec(n: usize) -> Vec<Self> {
         (0..n).map(|_| Self::rand()).collect()
     }
 
     /// Samples an array of values of length `N` using [`OsRng`].
     #[inline]
+    #[cfg(not(feature = "no_random"))]
     fn rand_array<const N: usize>() -> [Self; N] {
         Self::rand_vec(N)
             .try_into()
